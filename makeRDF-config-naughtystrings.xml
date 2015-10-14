@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+<!DOCTYPE dbExport [
+  <!ENTITY dc   "http://purl.org/dc/elements/1.1/">
+  <!ENTITY dct  "http://purl.org/dc/terms/">
+  <!ENTITY owl  "http://www.w3.org/2002/07/owl#">
+  <!ENTITY rdf  "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
+  <!ENTITY foaf "http://xmlns.com/foaf/0.1/">
+  <!ENTITY eg   "http://example.com/ns/">
+  <!ENTITY id   "http://example.com/id/">
+  <!ENTITY base "http://example.com/">
+]>
+
+<dbExport xmlns:dc="&dc;"
+          xmlns:dct="&dct;"
+          xmlns:owl="&owl;"
+          xmlns:rdf="&rdf;"
+          xmlns:rdfs="&rdfs;"
+          xmlns:foaf="&foaf;"
+          xmlns:eg="&eg;"
+          xmlns:id="&id;"
+          xmlns:base="&base;"
+>
+
+  <info>
+    <title name="Example RDF" />
+    <creator name="Ian Millard" />
+    <creator name="John Doe" />
+    <contributor name="Mary Jane" />
+    <contributor name="Mike Smith" />
+    <publisher name="Seme4 Ltd" />
+    <publisher name="Ethos VO" />
+    <institution name="Seme4 Ltd" />
+    <copyright name="(c) 2015. All Rights Reserved." />
+    <rightsholder name="Seme4 Ltd" />
+    <license name="n/a" />
+    <version name="1.0" />
+    <created name="13-10-2015" />
+    <modified name="13-10-2015" />
+    <language name="en" />
+    <source name="n/a" />
+    <subject name="example" />
+    <audience name="all" />
+  </info>
+
+  <php>
+    <include name="makeRDF-functions.php" />
+  </php>
+
+  <!-- example table -->
+  <table output="example.rdf" source="example.csv" description="An example table">
+    <resource property="rdf:type"	 value="&foaf;Person" />
+    <resource property="rdf:about"	 value="&base;person/{1}" mapping="tidyURI" />
+    <literal  property="foaf:name"	 value="{2}" mapping="tidyLiteral" />
+    <resource property="foaf:depiction"	 value="{3}" mapping="photoURI" />
+    <userdef  property="eg:hasExpertise" value="{4}" mapping="expertise" />
+    <resource property="foaf:knows"      value="{5}" mapping="knows" />
+  </table>
+
+  <!-- simple mapping (search/replace) -->
+  <mapping id="gender">
+    <convert from="M" to="Male" />
+    <convert from="F" to="Female" />
+  </mapping>
+
+  <!-- tidying up of values using callback function -->
+  <!-- see makeRDF-functions.php for common utils -->
+  <mapping id="tidyURI">
+    <convert from="/^(.+)$/e" to="tidy('\1', 'URI', false)" />
+  </mapping>
+
+  <mapping id="tidyLiteral">
+    <convert from="/^(.+)$/se" to="tidy('\1', 'literal')" />
+  </mapping>
+
+  <!-- images -->
+  <mapping id="photoURI">
+    <convert from="/^(.+)$/e" to="format_uri('\1', '&amp;base;media/files/people/')" />
+  </mapping>
+
+  <!-- associations -->
+  <mapping id="expertise">
+    <convert from="/^(.+)$/e" to="split_ids_with_label('\1', 'eg:hasExpertise', '&amp;id;expertise/', 'eg:Expertise')" />
+  </mapping>
+
+  <mapping id="knows">
+    <convert from="/^(.+)$/e" to="split_ids('\1', 'foaf:knows', '&amp;id;person/')" />
+  </mapping>
+
+
+</dbExport>

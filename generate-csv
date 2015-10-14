@@ -1,0 +1,57 @@
+#!/usr/bin/php -q
+<?php
+
+//open blns.json
+$file = __DIR__ . '/blns.json';
+$strings = json_decode(file_get_contents($file), true);
+
+//generate the csv
+
+$csv = array();
+
+// "joe","Joe Bloggs","joe.bloggs@example.com","joe.jpg","php;rdf","alice;bob;claire"
+
+//the good input data:
+$csv[] = array(
+  "joe",
+  "Joe Bloggs",
+  "joe.bloggs@example.com",
+  "joe.jpg",
+  "php;rdf",
+  "alice;bob;claire",
+);
+
+//the ugly data:
+
+//test an empty line
+$csv[] = array();
+
+//test each naughty string in each position
+for ($i = 2, $s = count($strings); $i < $s; $i++) {
+
+  for ($j = 0, $t = count($csv[0]); $j < $t; $j++) {
+
+    $temp = $csv[0];
+    $temp[$j] = $strings[$i];
+
+    $csv[] = $temp;
+  }
+
+}
+
+//var_dump($csv);
+//write to file
+$fp = fopen(__DIR__.'/stringtest.csv', 'w');
+if ($fp) {
+  foreach($csv as $value) {
+      if (!empty($value)) {
+        fwrite($fp, '"'. implode('","', $value) . '"' . PHP_EOL);
+      } else {
+        fwrite($fp, PHP_EOL);//empty line
+      }
+      echo ".";
+      flush();
+  }
+  echo PHP_EOL."Done.".PHP_EOL;
+}
+fclose($fp);
