@@ -45,7 +45,10 @@ $fp = fopen(__DIR__.'/stringtest.csv', 'w');
 if ($fp) {
   foreach($csv as $value) {
       if (!empty($value)) {
+        //version with '"'
         fwrite($fp, '"'. implode('","', $value) . '"' . PHP_EOL);
+        //version without '"'
+        fwrite($fp, ''. implode(',', $value) . '' . PHP_EOL);
       } else {
         fwrite($fp, PHP_EOL);//empty line
       }
