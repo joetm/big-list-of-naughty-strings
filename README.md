@@ -2,4 +2,4 @@ Fork from Big List of Naughty Strings
 
 ## Usage
 
-Generate input RDF for string testing
+Generate input CSV for string testing
